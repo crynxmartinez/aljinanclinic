@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Admin Portal - Clinic Management</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts - Arabic Support -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/animations.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0066cc',
+                        secondary: '#00cc66',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-100">
+    
+    <!-- Navigation -->
+    <nav class="bg-gradient-to-r from-primary to-blue-700 text-white shadow-lg">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-user-shield text-2xl"></i>
+                    <span class="text-xl font-bold">Super Admin Portal</span>
+                </div>
+                
+                <div class="flex items-center gap-4">
+                    <span class="font-semibold">Administrator</span>
+                    <button onclick="logout()" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition">
+                        <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-8">
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-600 text-sm font-semibold">Total Appointments</p>
+                        <p class="text-3xl font-bold text-primary" id="total-appointments">0</p>
+                    </div>
+                    <i class="fas fa-calendar-check text-4xl text-primary opacity-20"></i>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-600 text-sm font-semibold">Active Doctors</p>
+                        <p class="text-3xl font-bold text-green-600" id="total-doctors">0</p>
+                    </div>
+                    <i class="fas fa-user-md text-4xl text-green-600 opacity-20"></i>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-600 text-sm font-semibold">Staff Members</p>
+                        <p class="text-3xl font-bold text-blue-600" id="total-staff">0</p>
+                    </div>
+                    <i class="fas fa-users text-4xl text-blue-600 opacity-20"></i>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-600 text-sm font-semibold">Pending</p>
+                        <p class="text-3xl font-bold text-yellow-600" id="pending-appointments">0</p>
+                    </div>
+                    <i class="fas fa-clock text-4xl text-yellow-600 opacity-20"></i>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tabs -->
+        <div class="bg-white rounded-lg shadow-lg mb-6">
+            <div class="flex border-b">
+                <button onclick="switchTab('appointments')" id="tab-appointments" class="flex-1 px-6 py-4 font-semibold text-primary border-b-2 border-primary">
+                    <i class="fas fa-calendar-check mr-2"></i>Appointments
+                </button>
+                <button onclick="switchTab('users')" id="tab-users" class="flex-1 px-6 py-4 font-semibold text-gray-600 hover:text-primary">
+                    <i class="fas fa-users mr-2"></i>Users
+                </button>
+                <button onclick="switchTab('doctors')" id="tab-doctors" class="flex-1 px-6 py-4 font-semibold text-gray-600 hover:text-primary">
+                    <i class="fas fa-user-md mr-2"></i>Doctors
+                </button>
+            </div>
+        </div>
+        
+        <!-- Appointments Tab -->
+        <div id="content-appointments" class="bg-white rounded-lg shadow-lg p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800">
+                    <i class="fas fa-calendar-check text-primary mr-2"></i>All Appointments
+                </h2>
+            </div>
+            
+            <div id="appointments-list" class="space-y-4">
+                <div class="text-center py-8 text-gray-500">
+                    <i class="fas fa-spinner fa-spin text-3xl mb-4"></i>
+                    <p>Loading appointments...</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Users Tab -->
+        <div id="content-users" class="bg-white rounded-lg shadow-lg p-6 hidden">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800">
+                    <i class="fas fa-users text-primary mr-2"></i>Manage Users
+                </h2>
+                <button onclick="showAddUserModal()" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                    <i class="fas fa-plus mr-2"></i>Add User
+                </button>
+            </div>
+            
+            <div id="users-list" class="space-y-4">
+                <div class="text-center py-8 text-gray-500">
+                    <i class="fas fa-spinner fa-spin text-3xl mb-4"></i>
+                    <p>Loading users...</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Doctors Tab -->
+        <div id="content-doctors" class="bg-white rounded-lg shadow-lg p-6 hidden">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800">
+                    <i class="fas fa-user-md text-primary mr-2"></i>Manage Doctors
+                </h2>
+                <button onclick="showAddDoctorModal()" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                    <i class="fas fa-plus mr-2"></i>Add Doctor
+                </button>
+            </div>
+            
+            <div id="doctors-list" class="space-y-4">
+                <div class="text-center py-8 text-gray-500">
+                    <i class="fas fa-spinner fa-spin text-3xl mb-4"></i>
+                    <p>Loading doctors...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed top-4 right-4 z-50"></div>
+    
+    <!-- JavaScript Modules -->
+    <script type="module" src="../js/pages/superadmin.js"></script>
+</body>
+</html>
