@@ -149,6 +149,29 @@
 </head>
 <body class="bg-gray-100">
     
+    <!-- Cookie Consent Banner -->
+    <div id="cookie-banner" class="fixed bottom-0 left-0 right-0 bg-gray-900 text-white p-4 shadow-2xl z-50 transform translate-y-full transition-transform duration-500">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-start space-x-3">
+                <i class="fas fa-cookie-bite text-3xl text-primary mt-1"></i>
+                <div>
+                    <h3 class="font-bold mb-1" data-translate="cookie.title">We Value Your Privacy</h3>
+                    <p class="text-sm text-gray-300" data-translate="cookie.message">
+                        We use cookies to enhance your experience, analyze site usage, and protect your health information in compliance with HIPAA.
+                    </p>
+                </div>
+            </div>
+            <div class="flex flex-wrap gap-2">
+                <button onclick="acceptCookies()" class="bg-primary hover:bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold transition">
+                    <i class="fas fa-check mr-2"></i><span data-translate="cookie.accept">Accept All</span>
+                </button>
+                <a href="/cookies.html" class="bg-gray-700 hover:bg-gray-600 text-white px-6 py-2 rounded-lg font-semibold transition">
+                    <span data-translate="cookie.learn">Learn More</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    
     <!-- Navigation -->
     <nav class="fixed top-0 left-0 right-0 bg-white shadow-md z-50">
         <div class="container mx-auto px-4 md:px-6 py-4">
@@ -318,6 +341,50 @@
         </div>
     </section>
     
+    <!-- Security & Compliance Section -->
+    <section class="py-12 bg-gradient-to-r from-blue-600 to-blue-800 text-white">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-8">
+                <h3 class="text-3xl font-bold mb-2" data-translate="security.title">Your Privacy & Security Matters</h3>
+                <p class="text-blue-100" data-translate="security.subtitle">We protect your health information with industry-leading security</p>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
+                <div class="text-center">
+                    <div class="bg-white bg-opacity-20 rounded-xl p-6 hover:bg-opacity-30 transition">
+                        <i class="fas fa-shield-alt text-5xl mb-3"></i>
+                        <h4 class="font-bold mb-1" data-translate="security.hipaa">HIPAA Compliant</h4>
+                        <p class="text-xs text-blue-100" data-translate="security.hipaaDesc">Protected Health Info</p>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <div class="bg-white bg-opacity-20 rounded-xl p-6 hover:bg-opacity-30 transition">
+                        <i class="fas fa-lock text-5xl mb-3"></i>
+                        <h4 class="font-bold mb-1" data-translate="security.ssl">SSL Encrypted</h4>
+                        <p class="text-xs text-blue-100" data-translate="security.sslDesc">256-bit Security</p>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <div class="bg-white bg-opacity-20 rounded-xl p-6 hover:bg-opacity-30 transition">
+                        <i class="fas fa-database text-5xl mb-3"></i>
+                        <h4 class="font-bold mb-1" data-translate="security.data">Data Protected</h4>
+                        <p class="text-xs text-blue-100" data-translate="security.dataDesc">Secure Storage</p>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <div class="bg-white bg-opacity-20 rounded-xl p-6 hover:bg-opacity-30 transition">
+                        <i class="fas fa-user-shield text-5xl mb-3"></i>
+                        <h4 class="font-bold mb-1" data-translate="security.privacy">Privacy First</h4>
+                        <p class="text-xs text-blue-100" data-translate="security.privacyDesc">Your Rights Protected</p>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt-8">
+                <a href="/privacy.html" class="text-white hover:text-blue-200 underline mr-4" data-translate="security.privacyLink">Privacy Policy</a>
+                <a href="/hipaa-notice.html" class="text-white hover:text-blue-200 underline" data-translate="security.hipaaLink">HIPAA Notice</a>
+            </div>
+        </div>
+    </section>
+    
     <!-- Section 3: Booking -->
     <section id="booking" class="section bg-gradient-to-br from-gray-50 to-blue-50">
         <div class="container mx-auto px-6 w-full">
@@ -407,14 +474,38 @@
                             <textarea id="apt-symptoms" rows="3" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:outline-none"></textarea>
                         </div>
                         
-                        <!-- Consent Checkbox -->
-                        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                            <label class="flex items-start cursor-pointer">
-                                <input type="checkbox" id="consent-checkbox" required class="mt-1 mr-3 w-5 h-5 text-primary focus:ring-2 focus:ring-primary">
-                                <span class="text-sm text-gray-700" data-translate="form.consent">
-                                    I consent to receive communications via email, SMS, and WhatsApp regarding my appointment. I understand that my personal information will be securely stored for future reference and appointment management.
-                                </span>
-                            </label>
+                        <!-- Enhanced Consent Section -->
+                        <div class="bg-blue-50 border-2 border-blue-200 rounded-lg p-6">
+                            <h4 class="font-bold text-gray-800 mb-4 flex items-center">
+                                <i class="fas fa-shield-alt text-primary mr-2"></i>
+                                <span data-translate="form.consentTitle">Privacy & Consent</span>
+                            </h4>
+                            
+                            <div class="space-y-3">
+                                <label class="flex items-start cursor-pointer">
+                                    <input type="checkbox" id="consent-checkbox" required class="mt-1 mr-3 w-5 h-5 text-primary focus:ring-2 focus:ring-primary">
+                                    <span class="text-sm text-gray-700" data-translate="form.consent">
+                                        I consent to the collection and use of my health information as described in the Privacy Policy and HIPAA Notice. I consent to receive appointment reminders via email, SMS, and WhatsApp.
+                                    </span>
+                                </label>
+                                
+                                <div class="flex flex-wrap gap-2 text-xs">
+                                    <a href="/privacy.html" target="_blank" class="text-primary hover:underline flex items-center">
+                                        <i class="fas fa-file-alt mr-1"></i><span data-translate="form.viewPrivacy">View Privacy Policy</span>
+                                    </a>
+                                    <span class="text-gray-400">|</span>
+                                    <a href="/hipaa-notice.html" target="_blank" class="text-primary hover:underline flex items-center">
+                                        <i class="fas fa-shield-alt mr-1"></i><span data-translate="form.viewHipaa">View HIPAA Notice</span>
+                                    </a>
+                                </div>
+                                
+                                <div class="bg-white rounded p-3 mt-3">
+                                    <p class="text-xs text-gray-600 flex items-start">
+                                        <i class="fas fa-lock text-green-600 mr-2 mt-0.5"></i>
+                                        <span data-translate="form.dataProtection">Your data is encrypted and stored securely. We never sell your information to third parties. Data is retained indefinitely for comprehensive care.</span>
+                                    </p>
+                                </div>
+                            </div>
                         </div>
                         
                         <button type="submit" id="submit-btn" class="w-full bg-primary text-white px-6 py-4 rounded-lg font-bold text-lg hover:bg-blue-700 transition">
@@ -1290,7 +1381,11 @@
                     service: 'Service (Optional)',
                     chooseService: 'Choose a service...',
                     symptoms: 'Symptoms / Reason for Visit',
-                    consent: 'I consent to receive communications via email, SMS, and WhatsApp regarding my appointment. I understand that my personal information will be securely stored for future reference and appointment management.',
+                    consentTitle: 'Privacy & Consent',
+                    consent: 'I consent to the collection and use of my health information as described in the Privacy Policy and HIPAA Notice. I consent to receive appointment reminders via email, SMS, and WhatsApp.',
+                    viewPrivacy: 'View Privacy Policy',
+                    viewHipaa: 'View HIPAA Notice',
+                    dataProtection: 'Your data is encrypted and stored securely. We never sell your information to third parties. Data is retained indefinitely for comprehensive care.',
                     confirmBtn: 'Confirm Booking'
                 },
                 success: {
@@ -1323,6 +1418,26 @@
                     privacy: 'Privacy Policy',
                     terms: 'Terms of Service',
                     cookies: 'Cookie Policy'
+                },
+                cookie: {
+                    title: 'We Value Your Privacy',
+                    message: 'We use cookies to enhance your experience, analyze site usage, and protect your health information in compliance with HIPAA.',
+                    accept: 'Accept All',
+                    learn: 'Learn More'
+                },
+                security: {
+                    title: 'Your Privacy & Security Matters',
+                    subtitle: 'We protect your health information with industry-leading security',
+                    hipaa: 'HIPAA Compliant',
+                    hipaaDesc: 'Protected Health Info',
+                    ssl: 'SSL Encrypted',
+                    sslDesc: '256-bit Security',
+                    data: 'Data Protected',
+                    dataDesc: 'Secure Storage',
+                    privacy: 'Privacy First',
+                    privacyDesc: 'Your Rights Protected',
+                    privacyLink: 'Privacy Policy',
+                    hipaaLink: 'HIPAA Notice'
                 }
             },
             ar: {
@@ -1378,7 +1493,11 @@
                     service: 'الخدمة (اختياري)',
                     chooseService: 'اختر خدمة...',
                     symptoms: 'الأعراض / سبب الزيارة',
-                    consent: 'أوافق على تلقي الاتصالات عبر البريد الإلكتروني والرسائل النصية وواتساب بخصوص موعدي. أفهم أن معلوماتي الشخصية سيتم تخزينها بشكل آمن للرجوع إليها في المستقبل وإدارة المواعيد.',
+                    consentTitle: 'الخصوصية والموافقة',
+                    consent: 'أوافق على جمع واستخدام معلوماتي الصحية كما هو موضح في سياسة الخصوصية وإشعار HIPAA. أوافق على تلقي تذكيرات المواعيد عبر البريد الإلكتروني والرسائل النصية وواتساب.',
+                    viewPrivacy: 'عرض سياسة الخصوصية',
+                    viewHipaa: 'عرض إشعار HIPAA',
+                    dataProtection: 'بياناتك مشفرة ومخزنة بشكل آمن. نحن لا نبيع معلوماتك لأطراف ثالثة أبداً. يتم الاحتفاظ بالبيانات إلى أجل غير مسمى للرعاية الشاملة.',
                     confirmBtn: 'تأكيد الحجز'
                 },
                 success: {
@@ -1411,6 +1530,26 @@
                     privacy: 'سياسة الخصوصية',
                     terms: 'شروط الخدمة',
                     cookies: 'سياسة ملفات تعريف الارتباط'
+                },
+                cookie: {
+                    title: 'نحن نقدر خصوصيتك',
+                    message: 'نستخدم ملفات تعريف الارتباط لتحسين تجربتك وتحليل استخدام الموقع وحماية معلوماتك الصحية وفقاً لـ HIPAA.',
+                    accept: 'قبول الكل',
+                    learn: 'اعرف المزيد'
+                },
+                security: {
+                    title: 'خصوصيتك وأمانك مهمان',
+                    subtitle: 'نحمي معلوماتك الصحية بأمان رائد في الصناعة',
+                    hipaa: 'متوافق مع HIPAA',
+                    hipaaDesc: 'معلومات صحية محمية',
+                    ssl: 'مشفر SSL',
+                    sslDesc: 'أمان 256 بت',
+                    data: 'بيانات محمية',
+                    dataDesc: 'تخزين آمن',
+                    privacy: 'الخصوصية أولاً',
+                    privacyDesc: 'حقوقك محمية',
+                    privacyLink: 'سياسة الخصوصية',
+                    hipaaLink: 'إشعار HIPAA'
                 }
             }
         };
@@ -1581,12 +1720,30 @@
             container.innerHTML = html;
         };
         
+        // Cookie consent functions
+        function acceptCookies() {
+            localStorage.setItem('cookieConsent', 'accepted');
+            document.getElementById('cookie-banner').classList.add('translate-y-full');
+        }
+        
+        function showCookieBanner() {
+            const consent = localStorage.getItem('cookieConsent');
+            if (!consent) {
+                setTimeout(() => {
+                    document.getElementById('cookie-banner').classList.remove('translate-y-full');
+                }, 1000);
+            }
+        }
+        
         // Initialize language detection on page load
         window.addEventListener('DOMContentLoaded', () => {
             detectLanguage();
             
             // Set current year in footer
             document.getElementById('current-year').textContent = new Date().getFullYear();
+            
+            // Show cookie banner if not accepted
+            showCookieBanner();
         });
     </script>
 </body>
