@@ -1993,10 +1993,10 @@
                         </div>
                         
                         <div class="flex space-x-2 pt-4 border-t">
-                            <button type="submit" class="flex-1 bg-gradient-to-r from-primary to-blue-600 text-white px-6 py-3 rounded-lg hover:from-blue-600 hover:to-blue-700 transition font-semibold shadow-md">
-                                <i class="fas fa-save mr-2"></i>${t('Save Service')}
+                            <button type="submit" id="save-service-btn" class="flex-1 bg-gradient-to-r from-primary to-blue-600 text-white px-6 py-3 rounded-lg hover:from-blue-600 hover:to-blue-700 transition font-semibold shadow-md">
+                                <i class="fas fa-save mr-2"></i><span id="save-btn-text">${t('Save Service')}</span>
                             </button>
-                            <button type="button" onclick="closeModal()" class="flex-1 bg-gray-300 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-400 transition font-semibold">
+                            <button type="button" onclick="closeModal()" id="cancel-service-btn" class="flex-1 bg-gray-300 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-400 transition font-semibold">
                                 ${t('Cancel')}
                             </button>
                         </div>
@@ -2007,6 +2007,17 @@
             
             document.getElementById('global-service-form').addEventListener('submit', async (e) => {
                 e.preventDefault();
+                
+                // Show loading state
+                const saveBtn = document.getElementById('save-service-btn');
+                const cancelBtn = document.getElementById('cancel-service-btn');
+                const originalBtnContent = saveBtn.innerHTML;
+                
+                saveBtn.disabled = true;
+                cancelBtn.disabled = true;
+                saveBtn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i><span>${t('Saving...')}</span>`;
+                saveBtn.classList.add('opacity-75', 'cursor-not-allowed');
+                
                 try {
                     const serviceType = document.querySelector('input[name="service-type"]:checked').value;
                     const isAutoDefault = serviceType === 'auto';
@@ -2067,6 +2078,12 @@
                 } catch (error) {
                     console.error('Error adding global service:', error);
                     showToast('Error adding global service', 'error');
+                    
+                    // Restore button state on error
+                    saveBtn.disabled = false;
+                    cancelBtn.disabled = false;
+                    saveBtn.innerHTML = originalBtnContent;
+                    saveBtn.classList.remove('opacity-75', 'cursor-not-allowed');
                 }
             });
         }
@@ -3291,6 +3308,7 @@
                 "€ EUR": "€ EUR",
                 "£ GBP": "£ GBP",
                 "Save Service": "Save Service",
+                "Saving...": "Saving...",
                 "Update Service": "Update Service",
                 "Cancel": "Cancel",
                 "Active": "Active",
@@ -3396,6 +3414,7 @@
                 "€ EUR": "يورو",
                 "£ GBP": "جنيه إسترليني",
                 "Save Service": "حفظ الخدمة",
+                "Saving...": "جاري الحفظ...",
                 "Update Service": "تحديث الخدمة",
                 "Cancel": "إلغاء",
                 "Active": "نشط",
