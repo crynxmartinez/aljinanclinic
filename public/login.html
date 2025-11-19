@@ -71,8 +71,12 @@
 <body class="bg-gradient-to-br from-primary to-blue-700 min-h-screen flex items-center justify-center p-4">
     
     <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md fade-in">
-        <!-- Language Switcher -->
-        <div class="flex justify-end mb-4">
+        <!-- Back to Home & Language Switcher -->
+        <div class="flex justify-between items-center mb-4">
+            <a href="/index.html" class="flex items-center gap-2 text-primary hover:text-blue-700 transition font-semibold">
+                <i class="fas fa-arrow-left"></i>
+                <span data-translate="backHome">Back to Home</span>
+            </a>
             <div class="flex items-center gap-2 bg-gray-100 rounded-lg p-1">
                 <button onclick="switchLanguage('en')" id="lang-en" class="px-3 py-1.5 rounded-md text-sm font-semibold transition bg-white text-primary shadow">
                     EN
@@ -206,6 +210,7 @@
         // Translation Dictionary
         const translations = {
             en: {
+                backHome: 'Back to Home',
                 title: 'Clinic Management',
                 subtitle: 'Sign in to continue',
                 staffLogin: 'Staff Login',
@@ -219,6 +224,7 @@
                 noAccount: "Don't have an account? Contact your administrator"
             },
             ar: {
+                backHome: 'العودة للرئيسية',
                 title: 'إدارة العيادة',
                 subtitle: 'سجل الدخول للمتابعة',
                 staffLogin: 'دخول الموظفين',
