@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Clinic Management System</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts - Arabic Support -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/animations.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0066cc',
+                        secondary: '#00cc66',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gradient-to-br from-primary to-blue-700 min-h-screen flex items-center justify-center p-4">
+    
+    <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md fade-in">
+        <!-- Language Switcher -->
+        <div class="flex justify-end mb-4">
+            <div class="flex items-center gap-2 bg-gray-100 rounded-lg p-1">
+                <button onclick="switchLanguage('en')" id="lang-en" class="px-3 py-1.5 rounded-md text-sm font-semibold transition bg-white text-primary shadow">
+                    EN
+                </button>
+                <button onclick="switchLanguage('ar')" id="lang-ar" class="px-3 py-1.5 rounded-md text-sm font-semibold transition text-gray-600 hover:text-gray-800">
+                    AR
+                </button>
+            </div>
+        </div>
+        
+        <!-- Logo -->
+        <div class="text-center mb-8">
+            <div class="inline-block p-4 bg-primary rounded-full mb-4">
+                <i class="fas fa-tooth text-white text-4xl"></i>
+            </div>
+            <h1 class="text-3xl font-bold text-gray-800" data-translate="title">Clinic Management</h1>
+            <p class="text-gray-600 mt-2" data-translate="subtitle">Sign in to continue</p>
+        </div>
+        
+        <!-- Role Selector -->
+        <div class="mb-6">
+            <div class="flex gap-2 bg-gray-100 p-1 rounded-lg">
+                <button type="button" onclick="switchLoginType('staff')" id="staff-tab" class="flex-1 py-2 px-4 rounded-lg font-semibold transition bg-white text-primary shadow" data-translate="staffLogin">
+                    Staff Login
+                </button>
+                <button type="button" onclick="switchLoginType('superadmin')" id="superadmin-tab" class="flex-1 py-2 px-4 rounded-lg font-semibold transition text-gray-600 hover:text-gray-800" data-translate="superAdmin">
+                    Super Admin
+                </button>
+            </div>
+        </div>
+        
+        <!-- Login Form -->
+        <form id="login-form" class="space-y-6">
+            <div>
+                <label for="email" class="block text-gray-700 font-semibold mb-2" id="email-label">
+                    <i class="fas fa-envelope mr-2 text-primary"></i><span data-translate="emailAddress">Email Address</span>
+                </label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    required 
+                    data-placeholder-en="Enter your email"
+                    data-placeholder-ar="أدخل بريدك الإلكتروني"
+                    placeholder="Enter your email"
+                    class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-primary focus:outline-none transition"
+                >
+            </div>
+            
+            <!-- Password Field (for Super Admin) -->
+            <div id="password-field" class="hidden">
+                <label for="password" class="block text-gray-700 font-semibold mb-2">
+                    <i class="fas fa-lock mr-2 text-primary"></i><span data-translate="password">Password</span>
+                </label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    data-placeholder-en="Enter your password"
+                    data-placeholder-ar="أدخل كلمة المرور"
+                    placeholder="Enter your password"
+                    class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-primary focus:outline-none transition"
+                >
+            </div>
+            
+            <!-- Error Message -->
+            <div id="error-message" class="hidden bg-red-50 border-l-4 border-red-500 p-4 rounded">
+                <div class="flex items-center">
+                    <i class="fas fa-exclamation-circle text-red-500 mr-2"></i>
+                    <p class="text-red-700 text-sm" id="error-text"></p>
+                </div>
+            </div>
+            
+            <!-- Submit Button -->
+            <button 
+                type="submit" 
+                id="login-btn"
+                class="w-full bg-primary text-white px-6 py-3 rounded-lg font-bold text-lg hover:bg-blue-700 transition transform hover:scale-105"
+            >
+                <span id="login-text">
+                    <i class="fas fa-sign-in-alt mr-2"></i><span data-translate="signIn">Sign In</span>
+                </span>
+                <i class="fas fa-spinner spinner hidden" id="login-spinner"></i>
+            </button>
+        </form>
+        
+        <!-- Divider -->
+        <div class="relative my-6">
+            <div class="absolute inset-0 flex items-center">
+                <div class="w-full border-t border-gray-300"></div>
+            </div>
+            <div class="relative flex justify-center text-sm">
+                <span class="px-4 bg-white text-gray-500" data-translate="or">OR</span>
+            </div>
+        </div>
+        
+        <!-- Guest Booking -->
+        <a 
+            href="/index.html" 
+            class="block w-full text-center bg-gray-100 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-200 transition"
+        >
+            <i class="fas fa-calendar-plus mr-2"></i><span data-translate="bookAsGuest">Book as Guest</span>
+        </a>
+        
+        <!-- Footer -->
+        <div class="mt-8 text-center text-sm text-gray-600">
+            <p data-translate="noAccount">Don't have an account? Contact your administrator</p>
+        </div>
+    </div>
+    
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed top-4 right-4 z-50"></div>
+    
+    <!-- JavaScript Modules -->
+    <script type="module" src="../js/pages/login.js"></script>
+</body>
+</html>
