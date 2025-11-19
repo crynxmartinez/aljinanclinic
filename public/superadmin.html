@@ -1858,10 +1858,20 @@
                                 ${description ? `<p class="text-gray-600 text-sm mb-4 line-clamp-2">${description}</p>` : `<p class="text-gray-400 text-sm mb-4 italic">${t('No description')}</p>`}
                                 
                                 <div class="flex items-center justify-between pt-4 border-t">
-                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}">
-                                        <i class="fas fa-circle text-xs mr-1"></i>
-                                        ${isActive ? t('Active') : t('Inactive')}
-                                    </span>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}">
+                                            <i class="fas fa-circle text-xs mr-1"></i>
+                                            ${isActive ? t('Active') : t('Inactive')}
+                                        </span>
+                                        ${service.isAutoDefault ? 
+                                            `<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700 border border-green-300">
+                                                🟢 ${t('AUTO')}
+                                            </span>` : 
+                                            `<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-600 border border-gray-300">
+                                                ⚪ ${t('MANUAL')}
+                                            </span>`
+                                        }
+                                    </div>
                                     <span class="text-primary text-sm font-semibold">
                                         ${t('View Details')} <i class="fas fa-arrow-right ml-1"></i>
                                     </span>
@@ -1941,6 +1951,45 @@
                                     <span class="text-gray-700 font-semibold">${t('Active (available for doctors)')}</span>
                                 </label>
                             </div>
+                            
+                            <!-- AUTO-DEFAULT TOGGLE -->
+                            <div class="md:col-span-2 bg-gradient-to-r from-blue-50 to-green-50 border-2 border-blue-200 rounded-lg p-4">
+                                <div class="flex items-start justify-between mb-3">
+                                    <div class="flex-1">
+                                        <h4 class="text-lg font-bold text-gray-800 mb-1">
+                                            <i class="fas fa-magic mr-2 text-primary"></i>${t('Auto-Assign to Doctors')}
+                                        </h4>
+                                        <p class="text-sm text-gray-600">${t('Control how this service is distributed to doctors')}</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="space-y-3">
+                                    <label class="flex items-start space-x-3 cursor-pointer p-3 bg-white rounded-lg border-2 border-gray-200 hover:border-primary transition" id="manual-option">
+                                        <input type="radio" name="service-type" value="manual" checked class="mt-1 w-5 h-5 text-primary focus:ring-2 focus:ring-primary">
+                                        <div class="flex-1">
+                                            <div class="flex items-center space-x-2 mb-1">
+                                                <span class="font-semibold text-gray-800">⚪ ${t('Manual Template')}</span>
+                                                <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">${t('Current Default')}</span>
+                                            </div>
+                                            <p class="text-sm text-gray-600">${t('Doctors can browse and manually add this service to their list')}</p>
+                                        </div>
+                                    </label>
+                                    
+                                    <label class="flex items-start space-x-3 cursor-pointer p-3 bg-white rounded-lg border-2 border-gray-200 hover:border-green-500 transition" id="auto-option">
+                                        <input type="radio" name="service-type" value="auto" class="mt-1 w-5 h-5 text-green-600 focus:ring-2 focus:ring-green-500">
+                                        <div class="flex-1">
+                                            <div class="flex items-center space-x-2 mb-1">
+                                                <span class="font-semibold text-gray-800">🟢 ${t('Auto-Default')}</span>
+                                                <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded font-semibold">${t('Recommended')}</span>
+                                            </div>
+                                            <p class="text-sm text-gray-600">${t('Automatically added to all doctors (existing and new)')}</p>
+                                            <p class="text-xs text-green-600 mt-1">
+                                                <i class="fas fa-info-circle mr-1"></i>${t('This will add the service to all current doctors immediately')}
+                                            </p>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
                         </div>
                         
                         <div class="flex space-x-2 pt-4 border-t">
@@ -1959,6 +2008,9 @@
             document.getElementById('global-service-form').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 try {
+                    const serviceType = document.querySelector('input[name="service-type"]:checked').value;
+                    const isAutoDefault = serviceType === 'auto';
+                    
                     const serviceData = {
                         name: document.getElementById('gs-name').value,
                         category: document.getElementById('gs-category').value,
@@ -1967,13 +2019,49 @@
                         currency: document.getElementById('gs-currency').value,
                         description: document.getElementById('gs-description').value || '',
                         isActive: document.getElementById('gs-active').checked,
+                        isAutoDefault: isAutoDefault,
                         createdBy: 'superadmin',
                         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                     };
                     
-                    await db.collection('globalServices').add(serviceData);
-                    showToast('Global service added successfully', 'success');
+                    // Add service to globalServices collection
+                    const serviceRef = await db.collection('globalServices').add(serviceData);
+                    
+                    // If auto-default, add to all existing doctors
+                    if (isAutoDefault) {
+                        const doctorsSnapshot = await db.collection('users').where('role', '==', 'doctor').get();
+                        
+                        if (!doctorsSnapshot.empty) {
+                            const batch = db.batch();
+                            let count = 0;
+                            
+                            doctorsSnapshot.docs.forEach(doctorDoc => {
+                                const doctorServiceRef = db.collection('services').doc();
+                                batch.set(doctorServiceRef, {
+                                    doctorId: doctorDoc.id,
+                                    globalServiceId: serviceRef.id,
+                                    name: serviceData.name,
+                                    category: serviceData.category,
+                                    duration: serviceData.duration,
+                                    price: serviceData.price,
+                                    currency: serviceData.currency,
+                                    description: serviceData.description,
+                                    isActive: true,
+                                    addedAt: firebase.firestore.FieldValue.serverTimestamp()
+                                });
+                                count++;
+                            });
+                            
+                            await batch.commit();
+                            showToast(`Service added and assigned to ${count} doctors!`, 'success');
+                        } else {
+                            showToast('Service added (no doctors to assign yet)', 'success');
+                        }
+                    } else {
+                        showToast('Global service added as template', 'success');
+                    }
+                    
                     closeModal();
                     loadGlobalServices();
                 } catch (error) {
@@ -3210,6 +3298,17 @@
                 "View Details": "View Details",
                 "No description": "No description",
                 "Free": "Free",
+                "AUTO": "AUTO",
+                "MANUAL": "MANUAL",
+                "Auto-Assign to Doctors": "Auto-Assign to Doctors",
+                "Control how this service is distributed to doctors": "Control how this service is distributed to doctors",
+                "Manual Template": "Manual Template",
+                "Current Default": "Current Default",
+                "Doctors can browse and manually add this service to their list": "Doctors can browse and manually add this service to their list",
+                "Auto-Default": "Auto-Default",
+                "Recommended": "Recommended",
+                "Automatically added to all doctors (existing and new)": "Automatically added to all doctors (existing and new)",
+                "This will add the service to all current doctors immediately": "This will add the service to all current doctors immediately",
                 "Edit Global Service": "Edit Global Service",
                 "No description provided": "No description provided",
                 "Active - Available for doctors": "Active - Available for doctors",
@@ -3304,6 +3403,17 @@
                 "View Details": "عرض التفاصيل",
                 "No description": "لا يوجد وصف",
                 "Free": "مجاني",
+                "AUTO": "تلقائي",
+                "MANUAL": "يدوي",
+                "Auto-Assign to Doctors": "التعيين التلقائي للأطباء",
+                "Control how this service is distributed to doctors": "التحكم في كيفية توزيع هذه الخدمة على الأطباء",
+                "Manual Template": "قالب يدوي",
+                "Current Default": "الافتراضي الحالي",
+                "Doctors can browse and manually add this service to their list": "يمكن للأطباء تصفح وإضافة هذه الخدمة يدويًا إلى قائمتهم",
+                "Auto-Default": "تلقائي افتراضي",
+                "Recommended": "موصى به",
+                "Automatically added to all doctors (existing and new)": "يضاف تلقائيًا لجميع الأطباء (الحاليين والجدد)",
+                "This will add the service to all current doctors immediately": "سيؤدي هذا إلى إضافة الخدمة لجميع الأطباء الحاليين فورًا",
                 "Edit Global Service": "تعديل الخدمة العالمية",
                 "No description provided": "لم يتم توفير وصف",
                 "Active - Available for doctors": "نشط - متاح للأطباء",
