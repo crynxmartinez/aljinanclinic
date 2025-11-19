@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Appointment - Clinic Management</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts - Arabic Support -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/animations.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0066cc',
+                        secondary: '#00cc66',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-100">
+    
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 bg-white shadow-md z-50">
+        <div class="container mx-auto px-4 md:px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2 md:space-x-3">
+                    <i class="fas fa-tooth text-primary text-2xl md:text-3xl"></i>
+                    <span class="text-xl md:text-2xl font-bold text-gray-800">Al Jinan Clinic</span>
+                </div>
+                
+                <!-- Language Switcher -->
+                <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-2 bg-gray-100 rounded-lg p-1">
+                        <button onclick="switchLanguage('en')" id="lang-en" class="px-3 py-1.5 rounded-md text-sm font-semibold transition bg-white text-primary shadow">
+                            EN
+                        </button>
+                        <button onclick="switchLanguage('ar')" id="lang-ar" class="px-3 py-1.5 rounded-md text-sm font-semibold transition text-gray-600 hover:text-gray-800">
+                            AR
+                        </button>
+                    </div>
+                    
+                    <a href="/login.html" class="bg-gradient-to-r from-primary to-secondary text-white px-6 py-2.5 rounded-lg hover:shadow-lg transition font-semibold">
+                        <i class="fas fa-sign-in-alt mr-2"></i>Staff Login
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <div class="pt-24 pb-12 px-4">
+        <div class="container mx-auto max-w-4xl">
+            <div class="bg-white rounded-2xl shadow-xl p-8 fade-in">
+                <div class="text-center mb-8">
+                    <h1 class="text-4xl font-bold text-gray-800 mb-4">Book Your Appointment</h1>
+                    <p class="text-gray-600">Choose your preferred date and time</p>
+                </div>
+                
+                <!-- Booking Form -->
+                <form id="booking-form" class="space-y-6">
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-gray-700 font-semibold mb-2">
+                                <i class="fas fa-user mr-2 text-primary"></i>Full Name
+                            </label>
+                            <input type="text" id="patient-name" required class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-primary focus:outline-none transition">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-gray-700 font-semibold mb-2">
+                                <i class="fas fa-envelope mr-2 text-primary"></i>Email
+                            </label>
+                            <input type="email" id="patient-email" required class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-primary focus:outline-none transition">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-gray-700 font-semibold mb-2">
+                                <i class="fas fa-phone mr-2 text-primary"></i>Phone
+                            </label>
+                            <input type="tel" id="patient-phone" required class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-primary focus:outline-none transition">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-gray-700 font-semibold mb-2">
+                                <i class="fas fa-calendar mr-2 text-primary"></i>Date
+                            </label>
+                            <input type="date" id="appointment-date" required class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-primary focus:outline-none transition">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-700 font-semibold mb-2">
+                            <i class="fas fa-comment-medical mr-2 text-primary"></i>Reason for Visit
+                        </label>
+                        <textarea id="symptoms" rows="4" required class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-primary focus:outline-none transition"></textarea>
+                    </div>
+                    
+                    <button type="submit" class="w-full bg-gradient-to-r from-primary to-secondary text-white px-6 py-4 rounded-lg font-bold text-lg hover:shadow-lg transition transform hover:scale-105">
+                        <i class="fas fa-check-circle mr-2"></i>Book Appointment
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed top-4 right-4 z-50"></div>
+    
+    <!-- JavaScript Modules -->
+    <script type="module" src="../js/pages/index.js"></script>
+</body>
+</html>
