@@ -16,10 +16,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="../css/main.css">
-    <link rel="stylesheet" href="../css/animations.css">
-    
     <script>
         tailwind.config = {
             theme: {
@@ -32,6 +28,45 @@
             }
         }
     </script>
+    
+    <style>
+        /* Arabic Font */
+        html[lang="ar"] {
+            font-family: 'Cairo', sans-serif;
+        }
+        
+        html[lang="ar"] body {
+            letter-spacing: 0.02em;
+            word-spacing: 0.1em;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in { animation: fadeIn 0.5s ease-out; }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .spinner { animation: spin 1s linear infinite; }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .toast { animation: slideIn 0.3s ease-out; }
+        
+        /* RTL Toast Animation */
+        html[dir="rtl"] .toast {
+            animation: slideInRTL 0.3s ease-out;
+        }
+        
+        @keyframes slideInRTL {
+            from { transform: translateX(-100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    </style>
 </head>
 <body class="bg-gradient-to-br from-primary to-blue-700 min-h-screen flex items-center justify-center p-4">
     
@@ -149,7 +184,347 @@
     <!-- Toast Container -->
     <div id="toast-container" class="fixed top-4 right-4 z-50"></div>
     
-    <!-- JavaScript Modules -->
-    <script type="module" src="../js/pages/login.js"></script>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCjJLE_Mgrv3HONhkkgApmUNVlGdnAIcvI",
+            authDomain: "clinic-a17bc.firebaseapp.com",
+            projectId: "clinic-a17bc",
+            storageBucket: "clinic-a17bc.firebasestorage.app",
+            messagingSenderId: "5214960983",
+            appId: "1:5214960983:web:4da52f47c510a50b3cd212",
+            measurementId: "G-7YM2Z0BY98"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        
+        // Translation Dictionary
+        const translations = {
+            en: {
+                title: 'Clinic Management',
+                subtitle: 'Sign in to continue',
+                staffLogin: 'Staff Login',
+                superAdmin: 'Super Admin',
+                emailAddress: 'Email Address',
+                password: 'Password',
+                username: 'Username',
+                signIn: 'Sign In',
+                or: 'OR',
+                bookAsGuest: 'Book as Guest',
+                noAccount: "Don't have an account? Contact your administrator"
+            },
+            ar: {
+                title: 'إدارة العيادة',
+                subtitle: 'سجل الدخول للمتابعة',
+                staffLogin: 'دخول الموظفين',
+                superAdmin: 'المدير العام',
+                emailAddress: 'البريد الإلكتروني',
+                password: 'كلمة المرور',
+                username: 'اسم المستخدم',
+                signIn: 'تسجيل الدخول',
+                or: 'أو',
+                bookAsGuest: 'احجز كزائر',
+                noAccount: 'ليس لديك حساب؟ اتصل بالمسؤول'
+            }
+        };
+        
+        // Current language state
+        let currentLanguage = 'en';
+        
+        // Detect user's language
+        function detectLanguage() {
+            const savedLang = localStorage.getItem('preferredLanguage');
+            if (savedLang) {
+                currentLanguage = savedLang;
+            } else {
+                const browserLang = navigator.language || navigator.userLanguage;
+                currentLanguage = browserLang.startsWith('ar') ? 'ar' : 'en';
+            }
+            updateLanguage(currentLanguage);
+        }
+        
+        // Switch language function
+        function switchLanguage(lang) {
+            currentLanguage = lang;
+            localStorage.setItem('preferredLanguage', lang);
+            updateLanguage(lang);
+        }
+        
+        // Update all text content based on language
+        function updateLanguage(lang) {
+            const html = document.documentElement;
+            html.setAttribute('lang', lang);
+            html.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+            
+            // Update language switcher buttons
+            const langEnBtn = document.getElementById('lang-en');
+            const langArBtn = document.getElementById('lang-ar');
+            
+            if (lang === 'en') {
+                langEnBtn.className = 'px-3 py-1.5 rounded-md text-sm font-semibold transition bg-white text-primary shadow';
+                langArBtn.className = 'px-3 py-1.5 rounded-md text-sm font-semibold transition text-gray-600 hover:text-gray-800';
+            } else {
+                langEnBtn.className = 'px-3 py-1.5 rounded-md text-sm font-semibold transition text-gray-600 hover:text-gray-800';
+                langArBtn.className = 'px-3 py-1.5 rounded-md text-sm font-semibold transition bg-white text-primary shadow';
+            }
+            
+            // Update all elements with data-translate attribute
+            document.querySelectorAll('[data-translate]').forEach(element => {
+                const key = element.getAttribute('data-translate');
+                if (translations[lang][key]) {
+                    element.textContent = translations[lang][key];
+                }
+            });
+            
+            // Update placeholders
+            document.querySelectorAll('[data-placeholder-en]').forEach(element => {
+                const placeholder = lang === 'en' ? element.getAttribute('data-placeholder-en') : element.getAttribute('data-placeholder-ar');
+                element.placeholder = placeholder;
+            });
+        }
+        
+        // Initialize language on page load
+        detectLanguage();
+        
+        // Login Type State
+        let currentLoginType = 'staff';
+        
+        // Switch Login Type
+        function switchLoginType(type) {
+            currentLoginType = type;
+            const staffTab = document.getElementById('staff-tab');
+            const superadminTab = document.getElementById('superadmin-tab');
+            const passwordField = document.getElementById('password-field');
+            const passwordInput = document.getElementById('password');
+            const emailInput = document.getElementById('email');
+            const emailLabel = emailInput.previousElementSibling;
+            
+            if (type === 'staff') {
+                staffTab.className = 'flex-1 py-2 px-4 rounded-lg font-semibold transition bg-white text-primary shadow';
+                superadminTab.className = 'flex-1 py-2 px-4 rounded-lg font-semibold transition text-gray-600 hover:text-gray-800';
+                passwordField.classList.add('hidden');
+                passwordInput.removeAttribute('required');
+                emailInput.type = 'email';
+                emailInput.placeholder = currentLanguage === 'en' ? 'Enter your email' : 'أدخل بريدك الإلكتروني';
+                emailLabel.innerHTML = '<i class="fas fa-envelope mr-2 text-primary"></i><span data-translate="emailAddress">' + translations[currentLanguage].emailAddress + '</span>';
+            } else {
+                staffTab.className = 'flex-1 py-2 px-4 rounded-lg font-semibold transition text-gray-600 hover:text-gray-800';
+                superadminTab.className = 'flex-1 py-2 px-4 rounded-lg font-semibold transition bg-white text-primary shadow';
+                passwordField.classList.remove('hidden');
+                passwordInput.setAttribute('required', 'required');
+                emailInput.type = 'text';
+                emailInput.placeholder = currentLanguage === 'en' ? 'Enter username (admin)' : 'أدخل اسم المستخدم (admin)';
+                emailLabel.innerHTML = '<i class="fas fa-user mr-2 text-primary"></i><span data-translate="username">' + translations[currentLanguage].username + '</span>';
+            }
+            
+            document.getElementById('error-message').classList.add('hidden');
+        }
+        
+        // Utility Functions
+        function isValidEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+        
+        function showToast(message, type = 'success') {
+            const colors = {
+                success: 'bg-green-500',
+                error: 'bg-red-500',
+                warning: 'bg-yellow-500',
+                info: 'bg-blue-500'
+            };
+            
+            const icons = {
+                success: 'fa-check-circle',
+                error: 'fa-exclamation-circle',
+                warning: 'fa-exclamation-triangle',
+                info: 'fa-info-circle'
+            };
+            
+            const toast = document.createElement('div');
+            toast.className = `toast ${colors[type]} text-white px-6 py-3 rounded-lg shadow-lg mb-2`;
+            toast.innerHTML = `
+                <div class="flex items-center space-x-2">
+                    <i class="fas ${icons[type]}"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            document.getElementById('toast-container').appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100%)';
+                toast.style.transition = 'all 0.3s ease-out';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+        
+        function getCurrentUser() {
+            const userStr = localStorage.getItem('currentUser');
+            return userStr ? JSON.parse(userStr) : null;
+        }
+        
+        function isLoggedIn() {
+            const adminSession = sessionStorage.getItem('adminLoggedIn');
+            const userStr = localStorage.getItem('currentUser');
+            return adminSession === 'true' || userStr !== null;
+        }
+        
+        function redirectByRole(user) {
+            if (!user || !user.role) {
+                console.error('Invalid user object');
+                return;
+            }
+            
+            switch(user.role) {
+                case 'superadmin':
+                    window.location.href = '/superadmin.html';
+                    break;
+                case 'doctor':
+                    window.location.href = '/doctor.html';
+                    break;
+                case 'staff':
+                    window.location.href = '/staff.html';
+                    break;
+                default:
+                    console.error('Unknown role:', user.role);
+                    localStorage.removeItem('currentUser');
+            }
+        }
+        
+        async function loginSuperAdmin(email, password) {
+            try {
+                // Hardcoded super admin credentials
+                if (email.toLowerCase().trim() !== 'admin' || password !== 'admin') {
+                    throw new Error('Invalid super admin credentials');
+                }
+                
+                // Create super admin user object
+                const user = {
+                    id: 'superadmin',
+                    email: 'admin',
+                    name: 'Super Administrator',
+                    role: 'superadmin'
+                };
+                
+                localStorage.setItem('currentUser', JSON.stringify(user));
+                sessionStorage.setItem('adminLoggedIn', 'true');
+                sessionStorage.setItem('adminUser', JSON.stringify(user));
+                
+                return user;
+            } catch (error) {
+                console.error('Super admin login error:', error);
+                throw error;
+            }
+        }
+        
+        async function login(email) {
+            try {
+                const snapshot = await db.collection('users')
+                    .where('email', '==', email.toLowerCase().trim())
+                    .limit(1)
+                    .get();
+                
+                if (snapshot.empty) {
+                    throw new Error('No account found with this email');
+                }
+                
+                const userDoc = snapshot.docs[0];
+                const userData = {
+                    id: userDoc.id,
+                    ...userDoc.data()
+                };
+                
+                localStorage.setItem('currentUser', JSON.stringify(userData));
+                
+                return userData;
+            } catch (error) {
+                console.error('Login error:', error);
+                throw error;
+            }
+        }
+        
+        // Check if already logged in
+        if (isLoggedIn()) {
+            const user = getCurrentUser();
+            redirectByRole(user);
+        }
+        
+        // Handle login form submission
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const loginBtn = document.getElementById('login-btn');
+            const loginText = document.getElementById('login-text');
+            const loginSpinner = document.getElementById('login-spinner');
+            const errorMessage = document.getElementById('error-message');
+            const errorText = document.getElementById('error-text');
+            
+            // Validate email only for staff login
+            if (currentLoginType === 'staff' && !isValidEmail(email)) {
+                errorText.textContent = 'Please enter a valid email address';
+                errorMessage.classList.remove('hidden');
+                return;
+            }
+            
+            // Validate username for super admin
+            if (currentLoginType === 'superadmin' && !email) {
+                errorText.textContent = 'Please enter your username';
+                errorMessage.classList.remove('hidden');
+                return;
+            }
+            
+            // Validate password for super admin
+            if (currentLoginType === 'superadmin' && !password) {
+                errorText.textContent = 'Please enter your password';
+                errorMessage.classList.remove('hidden');
+                return;
+            }
+            
+            // Show loading
+            loginBtn.disabled = true;
+            loginText.classList.add('hidden');
+            loginSpinner.classList.remove('hidden');
+            errorMessage.classList.add('hidden');
+            
+            try {
+                let user;
+                
+                if (currentLoginType === 'superadmin') {
+                    user = await loginSuperAdmin(email, password);
+                } else {
+                    user = await login(email);
+                }
+                
+                showToast('Login successful! Redirecting...', 'success');
+                
+                setTimeout(() => {
+                    redirectByRole(user);
+                }, 1000);
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                errorText.textContent = error.message || 'Login failed. Please try again.';
+                errorMessage.classList.remove('hidden');
+                
+                loginBtn.disabled = false;
+                loginText.classList.remove('hidden');
+                loginSpinner.classList.add('hidden');
+            }
+        });
+        
+        // Clear error on input
+        document.getElementById('email').addEventListener('input', () => {
+            document.getElementById('error-message').classList.add('hidden');
+        });
+    </script>
 </body>
 </html>
